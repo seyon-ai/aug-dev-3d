@@ -24,7 +24,10 @@
     <div class="loader-tag"><span>We&nbsp;Create&nbsp;It.</span></div>
   </div>
   <div class="loader-bottom">
-    <span class="mono loader-label">LOADING ASSETS</span>
+    <div class="loader-bl">
+      <span class="mono loader-label">LOADING ASSETS</span>
+      <span class="mono loader-file" id="loaderFile">CORE/MESH.GLB</span>
+    </div>
     <span class="loader-count" id="loaderCount">0</span>
   </div>
   <div class="loader-bar"><span id="loaderBar"></span></div>
@@ -46,6 +49,7 @@
   <nav class="nav-links">
     <a href="#services" data-hover data-nav>Services</a>
     <a href="#work" data-hover data-nav>Work</a>
+    <a href="#philosophy" data-hover data-nav>Philosophy</a>
     <a href="#process" data-hover data-nav>Process</a>
     <a href="#studio" data-hover data-nav>Studio</a>
   </nav>
@@ -54,20 +58,29 @@
 
 <main id="smooth">
 
-  <!-- ============ HERO ============ -->
+  <!-- ============ HERO — pinned assembly sequence ============ -->
   <section class="hero" id="top">
     <div class="hero-stage" id="heroStage">
       <canvas id="sculpt"></canvas>
       <div class="hero-vignette" aria-hidden="true"></div>
+
       <div class="hero-frame">
         <span class="mono hm hm-tl">DIGITAL 3D CREATION STUDIO</span>
         <span class="mono hm hm-tr">PORTFOLIO — VOL. 01</span>
         <span class="mono hm hm-br">EST. 2025 — WORKING WORLDWIDE</span>
         <div class="hm-bl">
-          <span class="mono">SCROLL TO DISCOVER</span>
+          <span class="mono">SCROLL TO ASSEMBLE</span>
           <span class="scroll-line"><i></i></span>
         </div>
+        <span class="mono hm-hud">ASSEMBLY — <b id="hudPct">000</b>%</span>
+        <div class="hm-tags" aria-hidden="true">
+          <span class="mono tg" data-tg="0">MESH</span>
+          <span class="mono tg" data-tg="1">TOPOLOGY</span>
+          <span class="mono tg" data-tg="2">DETAIL</span>
+          <span class="mono tg" data-tg="3">FINISH</span>
+        </div>
       </div>
+
       <h1 class="hero-title" id="heroTitle" aria-label="Imagine It. We Create It.">
         <div class="ht-line ht-1" data-split>Imagine It.</div>
         <div class="ht-line ht-2" data-split>We Create It.</div>
@@ -88,10 +101,10 @@
   </section>
 
   <!-- ============ MANIFESTO (pinned word ramp) ============ -->
-  <section class="manifesto" id="manifesto">
+  <section class="manifesto" id="manifesto" data-pin>
     <div class="mani-stage">
       <div class="sec-label mono"><span>MANIFESTO</span><span>01 / 07</span></div>
-      <p class="ramp" id="ramp">AUG DEV STUDIO is a digital 3D creation studio. We transform raw ideas into precise, production-ready three-dimensional assets — combining AI-assisted pipelines with obsessive artistic refinement. From fantasy sculptures to game-ready assets, custom 3D creation made accessible, efficient and exact.</p>
+      <p class="ramp" data-ramp>AUG DEV STUDIO is a digital 3D creation studio. We transform raw ideas into precise, production-ready three-dimensional assets — combining AI-assisted pipelines with obsessive artistic refinement. From fantasy sculptures to game-ready assets, custom 3D creation made accessible, efficient and exact.</p>
     </div>
   </section>
 
@@ -143,6 +156,7 @@
   <!-- ============ SELECTED WORK ============ -->
   <section class="work" id="work">
     <div class="sec-label mono"><span>SELECTED WORK</span><span>03 / 07</span></div>
+    <span class="ghost" data-drift="0.08" aria-hidden="true">ASSETS</span>
     <div class="work-head">
       <h2 data-split>Featured Projects</h2>
       <span class="mono work-count">( 06 )</span>
@@ -180,64 +194,114 @@
     </div>
   </section>
 
-  <!-- ============ VALUES ============ -->
-  <section class="values" id="values">
-    <div class="sec-label mono"><span>THE STANDARD</span><span>04 / 07</span></div>
-    <span class="ghost" data-drift="0.1" aria-hidden="true">CRAFT</span>
-
-    <article class="value">
-      <span class="v-idx mono">( 01 )</span>
-      <h3 class="v-word" data-split>Precise</h3>
-      <p class="v-p" data-words>Every vertex placed with intent — clean topology, exact proportions and surfaces that hold up under the closest inspection, from render to real-time engine.</p>
-    </article>
-
-    <article class="value">
-      <span class="v-idx mono">( 02 )</span>
-      <h3 class="v-word" data-split>Refined</h3>
-      <p class="v-p" data-words>AI-assisted workflows guided by an artist’s hand — technology accelerates the pipeline, but craft makes every final decision.</p>
-    </article>
-
-    <article class="value">
-      <span class="v-idx mono">( 03 )</span>
-      <h3 class="v-word" data-split>Accessible</h3>
-      <p class="v-p" data-words>High-quality custom 3D made efficient and affordable — for individuals, businesses, game developers and creative professionals.</p>
-    </article>
+  <!-- ============ FULL-BLEED BREAK ============ -->
+  <section class="break" aria-hidden="true">
+    <figure class="break-fig">
+      <img src="assets/break-clay.jpg" alt="" data-speed="0.1" data-zoom>
+      <div class="break-cap mono">
+        <span>SURFACE STUDY — CLAY</span>
+        <span>DETAIL / 60K POLYS</span>
+      </div>
+    </figure>
   </section>
 
-  <!-- ============ PROCESS ============ -->
+  <!-- ============ PHILOSOPHY — pinned word moments ============ -->
+  <section class="phil" id="philosophy">
+    <div class="phil-row" data-pin>
+      <div class="phil-stage">
+        <span class="mono p-idx">( 01 / 03 )</span>
+        <span class="mono p-sec">PHILOSOPHY — 04 / 07</span>
+        <h3 class="p-word" data-split>Precise</h3>
+        <p class="p-def" data-ramp>Every vertex placed with intent — clean topology, exact proportions and surfaces that hold up under the closest inspection, from final render to real-time engine.</p>
+        <div class="p-meter"><i></i></div>
+      </div>
+    </div>
+    <div class="phil-row" data-pin>
+      <div class="phil-stage">
+        <span class="mono p-idx">( 02 / 03 )</span>
+        <span class="mono p-sec">PHILOSOPHY — 04 / 07</span>
+        <h3 class="p-word" data-split>Refined</h3>
+        <p class="p-def" data-ramp>AI-assisted workflows guided by an artist’s hand — technology accelerates the pipeline, but craft makes every final decision. Nothing ships half-finished.</p>
+        <div class="p-meter"><i></i></div>
+      </div>
+    </div>
+    <div class="phil-row" data-pin>
+      <div class="phil-stage">
+        <span class="mono p-idx">( 03 / 03 )</span>
+        <span class="mono p-sec">PHILOSOPHY — 04 / 07</span>
+        <h3 class="p-word" data-split>Accessible</h3>
+        <p class="p-def" data-ramp>High-quality custom 3D made efficient and affordable — for individuals, businesses, game developers and creative professionals who refuse to compromise.</p>
+        <div class="p-meter"><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROCESS — accordion ============ -->
   <section class="process" id="process">
     <div class="sec-label mono"><span>THE PROCESS</span><span>05 / 07</span></div>
     <div class="ap-wrap">
       <div class="ap-sticky">
         <span class="ap-cur" id="apCur">01</span>
         <span class="ap-total mono">/ 05</span>
-        <p class="ap-hint">Every project moves through a structured sequence — no ambiguity, no surprises.</p>
+        <div class="ap-stack mono">
+          <span data-i="01" class="on">01 — BRIEF</span>
+          <span data-i="02">02 — BLOCKOUT</span>
+          <span data-i="03">03 — SCULPT</span>
+          <span data-i="04">04 — RETOPO</span>
+          <span data-i="05">05 — DELIVERY</span>
+        </div>
+        <p class="ap-hint">Every project moves through a structured sequence — no ambiguity, no surprises. Click a stage to expand its scope.</p>
       </div>
       <div class="ap-rows">
-        <article class="ap-row" data-ap="01">
-          <h3 data-split>Brief &amp; References</h3>
-          <p>We lock the direction before a single polygon is placed — concept, references, style, constraints and target platform all defined up front.</p>
-          <ul class="mono"><li>Concept alignment</li><li>Reference board</li><li>Technical targets</li></ul>
+        <article class="ap-row open" data-ap="01">
+          <button class="ap-head" data-hover>
+            <h3>Brief &amp; References</h3>
+            <span class="ap-plus">+</span>
+          </button>
+          <div class="ap-detail"><div class="ap-detail-in">
+            <p>We lock the direction before a single polygon is placed — concept, references, style, constraints and target platform all defined up front.</p>
+            <ul class="mono"><li>Concept alignment</li><li>Reference board</li><li>Technical targets</li></ul>
+          </div></div>
         </article>
         <article class="ap-row" data-ap="02">
-          <h3 data-split>Blockout &amp; Form</h3>
-          <p>Silhouette and proportion are resolved early. The form must read correctly from every angle before detail work begins.</p>
-          <ul class="mono"><li>Silhouette pass</li><li>Proportion lock</li><li>Scale validation</li></ul>
+          <button class="ap-head" data-hover>
+            <h3>Blockout &amp; Form</h3>
+            <span class="ap-plus">+</span>
+          </button>
+          <div class="ap-detail"><div class="ap-detail-in">
+            <p>Silhouette and proportion are resolved early. The form must read correctly from every angle before detail work begins.</p>
+            <ul class="mono"><li>Silhouette pass</li><li>Proportion lock</li><li>Scale validation</li></ul>
+          </div></div>
         </article>
         <article class="ap-row" data-ap="03">
-          <h3 data-split>Sculpt &amp; Detail</h3>
-          <p>High-frequency detail, surface breakup and material intent — the stage where an asset earns its character.</p>
-          <ul class="mono"><li>High-poly sculpt</li><li>Surface detail</li><li>Material direction</li></ul>
+          <button class="ap-head" data-hover>
+            <h3>Sculpt &amp; Detail</h3>
+            <span class="ap-plus">+</span>
+          </button>
+          <div class="ap-detail"><div class="ap-detail-in">
+            <p>High-frequency detail, surface breakup and material intent — the stage where an asset earns its character.</p>
+            <ul class="mono"><li>High-poly sculpt</li><li>Surface detail</li><li>Material direction</li></ul>
+          </div></div>
         </article>
         <article class="ap-row" data-ap="04">
-          <h3 data-split>Retopo &amp; Optimize</h3>
-          <p>Clean topology, unwrapped UVs and budgets respected — assets arrive engine-ready, printable, or pipeline-clean.</p>
-          <ul class="mono"><li>Clean topology</li><li>UV / baking</li><li>Poly budget</li></ul>
+          <button class="ap-head" data-hover>
+            <h3>Retopo &amp; Optimize</h3>
+            <span class="ap-plus">+</span>
+          </button>
+          <div class="ap-detail"><div class="ap-detail-in">
+            <p>Clean topology, unwrapped UVs and budgets respected — assets arrive engine-ready, printable, or pipeline-clean.</p>
+            <ul class="mono"><li>Clean topology</li><li>UV / baking</li><li>Poly budget</li></ul>
+          </div></div>
         </article>
         <article class="ap-row" data-ap="05">
-          <h3 data-split>Render &amp; Deliver</h3>
-          <p>Cinematic presentation renders plus exports in the formats your workflow needs — OBJ, FBX, GLTF, STL, USDZ, BLEND.</p>
-          <ul class="mono"><li>Studio renders</li><li>Turntable</li><li>All formats</li></ul>
+          <button class="ap-head" data-hover>
+            <h3>Render &amp; Deliver</h3>
+            <span class="ap-plus">+</span>
+          </button>
+          <div class="ap-detail"><div class="ap-detail-in">
+            <p>Cinematic presentation renders plus exports in the formats your workflow needs — OBJ, FBX, GLTF, STL, USDZ, BLEND.</p>
+            <ul class="mono"><li>Studio renders</li><li>Turntable</li><li>All formats</li></ul>
+          </div></div>
         </article>
       </div>
     </div>
@@ -254,6 +318,9 @@
           <div class="stat"><span class="stat-num" data-count="120" data-suffix="+">0</span><span class="mono stat-l">ASSETS DELIVERED</span></div>
           <div class="stat"><span class="stat-num" data-count="6" data-suffix="">0</span><span class="mono stat-l">EXPORT FORMATS</span></div>
           <div class="stat"><span class="stat-num" data-count="48" data-suffix="h">0</span><span class="mono stat-l">AVG. TURNAROUND</span></div>
+        </div>
+        <div class="regions mono" aria-hidden="true">
+          <span>US</span><span>UK</span><span>EU</span><span>UAE</span><span>IN</span><span>SG</span><span class="rg-note">— REMOTE FIRST, WORKING WORLDWIDE</span>
         </div>
       </div>
       <figure class="studio-img rvl">
@@ -279,10 +346,10 @@
 
   <!-- ============ FOOTER ============ -->
   <footer class="footer">
-    <div class="foot-brand" data-drift="0.06" aria-hidden="true">AUG DEV<span>®</span></div>
+    <div class="foot-brand" data-drift="0.05" aria-hidden="true">AUG DEV<span>®</span></div>
     <div class="foot-bottom">
       <span class="mono">© 2026 AUG DEV STUDIO — ALL RIGHTS RESERVED</span>
-      <span class="mono foot-tag">IMAGINE IT. WE CREATE IT.</span>
+      <span class="mono"><a href="#" data-hover>PRIVACY</a> — <a href="#" data-hover>TERMS</a></span>
       <button class="mono to-top" id="toTop" data-hover>BACK TO TOP ↑</button>
     </div>
   </footer>

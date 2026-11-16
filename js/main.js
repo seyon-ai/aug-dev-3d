@@ -1,6 +1,6 @@
 /* ============================================================
-   AUG DEV STUDIO® — main.js v2
-   WebGL sculpture + inertial smooth scroll + scroll physics
+   AUG DEV STUDIO® — main.js v3
+   pinned assembly hero · inertial scroll · word ramps · accordion
    ============================================================ */
 (() => {
   'use strict';
@@ -9,6 +9,7 @@
   const $$ = (s, c = document) => [...c.querySelectorAll(s)];
   const lerp  = (a, b, n) => a + (b - a) * n;
   const clamp = (v, mn, mx) => Math.min(mx, Math.max(mn, v));
+  const ezo   = t => 1 - Math.pow(1 - clamp(t, 0, 1), 3);
   const FINE  = matchMedia('(pointer:fine)').matches;
   const RM    = matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -31,21 +32,41 @@
       w.appendChild(c); el.appendChild(w);
     }
   }
-  function splitWords(el) {
+  // masked slide-in words (one-shot reveal)
+  function splitMasked(el) {
     const words = el.textContent.trim().split(/\s+/);
     el.textContent = '';
-    return words.map((w, i) => {
+    words.forEach((w, i) => {
+      const mask = document.createElement('span'); mask.className = 'wdw';
+      const wd = document.createElement('span'); wd.className = 'wd';
+      wd.style.setProperty('--i', i); wd.textContent = w;
+      mask.appendChild(wd); el.appendChild(mask);
+      el.appendChild(document.createTextNode(' '));
+    });
+  }
+  // scroll-ramped words (opacity driven by pin progress)
+  function splitRamp(el) {
+    const words = el.textContent.trim().split(/\s+/);
+    el.textContent = '';
+    return words.map(w => {
       const s = document.createElement('span');
-      s.className = 'wd'; s.style.setProperty('--i', i); s.textContent = w;
+      s.className = 'rw'; s.textContent = w;
       el.appendChild(s); el.appendChild(document.createTextNode(' '));
       return s;
     });
   }
 
   $$('[data-split]').forEach(splitChars);
-  $$('[data-words]').forEach(el => splitWords(el));
-  const rampWords = splitWords($('#ramp'));
+  $$('[data-words]').forEach(splitMasked);
 
+  const ramps = $$('[data-ramp]').map(el => {
+    const pin = el.closest('[data-pin]');
+    return { words: splitRamp(el), pin,
+      meter: pin ? pin.querySelector('.p-meter i') : null,
+      top: 0, range: 1, lp: 0, last: -1 };
+  });
+
+  // rolling chars for the contact mega-link
   $$('[data-roll]').forEach(el => {
     const text = el.textContent;
     el.textContent = '';
@@ -62,7 +83,7 @@
   });
 
   /* ============================================================
-     INERTIAL SMOOTH SCROLL (lenis-style, keeps native flow)
+     INERTIAL SMOOTH SCROLL
      ============================================================ */
   const sm = { on: FINE && !RM, t: scrollY, c: scrollY };
   let lastWheel = 0;
@@ -77,7 +98,6 @@
       sm.t = clamp(sm.t + e.deltaY * (e.deltaMode === 1 ? 16 : 1), 0, maxScroll());
     }, { passive: false });
     addEventListener('scroll', () => {
-      // external scroll (scrollbar drag, keys, anchors) → resync
       if (performance.now() - lastWheel > 140 && Math.abs(scrollY - sm.c) > 4) {
         sm.t = sm.c = scrollY;
       }
@@ -85,30 +105,33 @@
   }
   addEventListener('scroll', () => { S.y = scrollY; }, { passive: true });
 
-  // anchor navigation through the inertia
   $$('a[href^="#"]').forEach(a => a.addEventListener('click', e => {
     const id = a.getAttribute('href');
     e.preventDefault();
-    if (id === '#') return; // dead link (work cards) — no navigation
+    if (id === '#') return;
     const y = id === '#top' ? 0 :
       ($(id) ? $(id).getBoundingClientRect().top + scrollY : 0);
-    if (sm.on) { sm.t = clamp(y, 0, maxScroll()); }
+    if (sm.on) sm.t = clamp(y, 0, maxScroll());
     else scrollTo({ top: y, behavior: 'smooth' });
   }));
 
   /* ============================================================
-     PRELOADER — real asset preload + white curtain sweep
+     PRELOADER
      ============================================================ */
   document.body.classList.add('locked');
   const loaderAssets = [
     'assets/p1-skull.jpg', 'assets/p2-headphones.jpg', 'assets/p3-statue.jpg',
     'assets/p4-environment.jpg', 'assets/p5-arch.jpg', 'assets/p6-android.jpg',
-    'assets/about.jpg'
+    'assets/about.jpg', 'assets/break-clay.jpg'
   ];
   let loadedCount = 0;
+  const fileEl = $('#loaderFile');
   loaderAssets.forEach(src => {
     const im = new Image();
-    im.onload = im.onerror = () => loadedCount++;
+    im.onload = im.onerror = () => {
+      loadedCount++;
+      if (fileEl) fileEl.textContent = src.toUpperCase();
+    };
     im.src = src;
   });
 
@@ -154,7 +177,7 @@
   }
 
   /* ============================================================
-     HERO — WebGL sculpture (three.js) with 2D fallback
+     HERO — WebGL assembly scene (three.js) + 2D fallback
      ============================================================ */
   const stage = $('#heroStage');
   let gl = null;
@@ -174,9 +197,9 @@
       holder.appendChild(renderer.domElement);
 
       const scene = new T.Scene();
-      scene.fog = new T.Fog(0x060606, 7, 16);
-      const cam = new T.PerspectiveCamera(38, 1, 0.1, 60);
-      cam.position.z = 7.4;
+      scene.fog = new T.Fog(0x060606, 8, 20);
+      const cam = new T.PerspectiveCamera(46, 1, 0.1, 80);
+      cam.position.set(0, 3.6, 12.5);
 
       scene.add(new T.AmbientLight(0x2a2a2a, 1));
       const key = new T.SpotLight(0xffffff, 2.4); key.position.set(5, 7, 6); scene.add(key);
@@ -185,35 +208,28 @@
 
       const g = new T.Group(); scene.add(g);
 
-      // clay-polished core
-      const core = new T.Mesh(
-        new T.TorusKnotGeometry(1, 0.34, 240, 36),
-        new T.MeshStandardMaterial({ color: 0xe6e6e3, roughness: 0.27, metalness: 0.38 })
-      );
+      const coreMat = new T.MeshStandardMaterial({ color: 0xe6e6e3, roughness: 0.27, metalness: 0.38, transparent: true, opacity: 0 });
+      const core = new T.Mesh(new T.TorusKnotGeometry(1, 0.34, 240, 36), coreMat);
+      core.scale.setScalar(0.001);
       g.add(core);
 
-      // wireframe cages
       const cage1 = new T.LineSegments(
         new T.EdgesGeometry(new T.IcosahedronGeometry(2.05, 1)),
-        new T.LineBasicMaterial({ color: 0xf4f4f1, transparent: true, opacity: 0.32 })
-      );
+        new T.LineBasicMaterial({ color: 0xf4f4f1, transparent: true, opacity: 0 }));
       const cage2 = new T.LineSegments(
         new T.EdgesGeometry(new T.DodecahedronGeometry(2.65, 0)),
-        new T.LineBasicMaterial({ color: 0xf4f4f1, transparent: true, opacity: 0.16 })
-      );
+        new T.LineBasicMaterial({ color: 0xf4f4f1, transparent: true, opacity: 0 }));
       g.add(cage1, cage2);
 
-      // orbit rings
-      function ring(r, rx, op) {
+      function ring(r, rx) {
         const pts = [];
         for (let i = 0; i <= 128; i++) pts.push(new T.Vector3(Math.cos(i / 128 * Math.PI * 2) * r, 0, Math.sin(i / 128 * Math.PI * 2) * r));
         const l = new T.Line(new T.BufferGeometry().setFromPoints(pts),
-          new T.LineBasicMaterial({ color: 0xf4f4f1, transparent: true, opacity: op }));
-        l.rotation.x = rx; g.add(l); return l;
+          new T.LineBasicMaterial({ color: 0xf4f4f1, transparent: true, opacity: 0 }));
+        l.rotation.x = rx; l.scale.setScalar(1.6); g.add(l); return l;
       }
-      const ring1 = ring(3.35, 1.25, 0.5), ring2 = ring(3.8, 1.05, 0.28);
+      const ring1 = ring(3.35, 1.25), ring2 = ring(3.8, 1.05);
 
-      // dust shell
       const n = 520, dp = new Float32Array(n * 3);
       for (let i = 0; i < n; i++) {
         const r = 3.1 + Math.random() * 1.6, th = Math.random() * Math.PI * 2, ph = Math.acos(2 * Math.random() - 1);
@@ -223,10 +239,11 @@
       }
       const dustGeo = new T.BufferGeometry();
       dustGeo.setAttribute('position', new T.BufferAttribute(dp, 3));
-      const dust = new T.Points(dustGeo, new T.PointsMaterial({ color: 0xf4f4f1, size: 0.022, transparent: true, opacity: 0.55 }));
+      const dustMat = new T.PointsMaterial({ color: 0xf4f4f1, size: 0.022, transparent: true, opacity: 0 });
+      const dust = new T.Points(dustGeo, dustMat);
+      dust.scale.setScalar(1.7);
       g.add(dust);
 
-      // core glow sprite
       const gc = document.createElement('canvas'); gc.width = gc.height = 256;
       const gx = gc.getContext('2d');
       const grad = gx.createRadialGradient(128, 128, 0, 128, 128, 128);
@@ -235,9 +252,8 @@
       grad.addColorStop(1, 'rgba(255,255,255,0)');
       gx.fillStyle = grad; gx.fillRect(0, 0, 256, 256);
       const glow = new T.Sprite(new T.SpriteMaterial({
-        map: new T.CanvasTexture(gc), transparent: true, opacity: 0.55,
-        blending: T.AdditiveBlending, depthWrite: false
-      }));
+        map: new T.CanvasTexture(gc), transparent: true, opacity: 0,
+        blending: T.AdditiveBlending, depthWrite: false }));
       glow.scale.set(8, 8, 1); glow.position.z = -2.5;
       g.add(glow);
 
@@ -249,51 +265,65 @@
       }
       size();
 
-      let spin = 0, trx = 0, try_ = 0;
+      let spin = 0, trx = 0, tryy = 0;
 
+      // ASSEMBLY TIMELINE — scrubbed by sf ∈ [0,1]  (their door-layer pattern)
       return {
         size,
         draw(dt, sf) {
-          spin += dt * 0.00011 * (1 + sf * 1.6);
-          g.rotation.y = spin;
-          core.rotation.x = 0.5 + sf * 0.6;
-          core.rotation.z = spin * 0.6;
-          const cs = 1 - sf * 0.16;
-          core.scale.setScalar(cs);
-          core.position.y = -sf * 0.55;
+          spin += dt * 0.00014;
+          g.rotation.y = spin * (0.25 + sf);
 
+          // cages converge from deep space
+          cage2.scale.setScalar(lerp(3.4, 1, ezo(sf / 0.5)));
+          cage1.scale.setScalar(lerp(2.2, 1, ezo((sf - 0.05) / 0.55)));
+          cage2.material.opacity = 0.18 * ezo(sf / 0.2);
+          cage1.material.opacity = 0.34 * ezo((sf - 0.12) / 0.35);
           cage1.rotation.y -= dt * 0.00016; cage1.rotation.x += dt * 0.00009;
           cage2.rotation.y += dt * 0.00010; cage2.rotation.z -= dt * 0.00007;
-          cage1.scale.setScalar(1 + sf * 0.6);
-          cage2.scale.setScalar(1 + sf * 1.15);
-          cage1.material.opacity = 0.32 * (1 - sf * 0.5);
-          cage2.material.opacity = 0.16 * (1 - sf * 0.4);
 
+          // core materializes
+          const cs = ezo((sf - 0.2) / 0.5);
+          core.scale.setScalar(Math.max(cs, 0.001));
+          coreMat.opacity = cs;
+          core.rotation.y = spin * (0.4 + sf);
+          core.rotation.x = 0.5 + sf * 0.6;
+
+          // rings lock in
+          const rl = ezo((sf - 0.6) / 0.35);
+          ring1.material.opacity = 0.5 * rl; ring2.material.opacity = 0.28 * rl;
+          ring1.scale.setScalar(lerp(1.6, 1, rl)); ring2.scale.setScalar(lerp(1.6, 1, rl));
           ring1.rotation.z += dt * 0.0002; ring2.rotation.z -= dt * 0.00014;
-          ring1.scale.setScalar(1 + sf * 0.5); ring2.scale.setScalar(1 + sf * 0.5);
-          ring1.material.opacity = 0.5 * (1 - sf); ring2.material.opacity = 0.28 * (1 - sf);
 
+          // dust settles + glow blooms
+          dustMat.opacity = 0.55 * ezo((sf - 0.3) / 0.5);
+          dust.scale.setScalar(lerp(1.7, 1, ezo(sf / 0.8)));
           dust.rotation.y += dt * 0.00007;
-          dust.scale.setScalar(1 + sf * 0.7);
-          dust.material.opacity = 0.55 * (1 - sf * 0.55);
+          glow.material.opacity = 0.55 * ezo((sf - 0.55) / 0.4);
 
-          // mouse parallax on whole group + camera drift
+          // mouse parallax
           const nx = S.lmx / innerWidth - 0.5, ny = S.lmy / innerHeight - 0.5;
-          trx = lerp(trx, ny * 0.28, 0.05); try_ = lerp(try_, nx * 0.4, 0.05);
-          g.rotation.x = trx; g.rotation.y = spin + try_;
-          cam.position.x = lerp(cam.position.x, nx * 0.8, 0.045);
-          cam.position.y = lerp(cam.position.y, -ny * 0.55, 0.045);
-          cam.position.z = 7.4 + sf * 2.1;
-          cam.lookAt(0, -sf * 0.35, 0);
+          trx = lerp(trx, ny * 0.26, 0.05); tryy = lerp(tryy, nx * 0.38, 0.05);
+          g.rotation.x = trx;
 
-          holder.style.opacity = 1 - sf * 0.4;
+          // camera: orbit arc + dolly + fov ramp (unzoom-to-orbit)
+          const orb = ezo(sf / 0.88);
+          const rad = lerp(12.5, 7.4, orb);
+          const ang = lerp(-1.1, 0, orb);
+          cam.position.x = Math.sin(ang) * rad + nx * 0.6;
+          cam.position.z = Math.cos(ang) * rad;
+          cam.position.y = lerp(3.6, 0, ezo(sf)) - ny * 0.5;
+          cam.fov = lerp(46, 38, orb);
+          cam.updateProjectionMatrix();
+          cam.lookAt(0, 0, 0);
+
           renderer.render(scene, cam);
         }
       };
     } catch (e) { return false; }
   }
 
-  /* ---------- 2D canvas fallback ---------- */
+  /* ---------- 2D canvas fallback (converging layers) ---------- */
   const canvas2d = $('#sculpt');
   const ctx = canvas2d.getContext('2d');
   let CW = 0, CH = 0;
@@ -316,32 +346,33 @@
     const r = 2 + Math.cos(3 * t);
     return [s * r * Math.cos(2 * t + ph), s * r * Math.sin(2 * t + ph), s * Math.sin(3 * t) * 1.25];
   }
-  function draw2D(dt) {
+  function draw2D(dt, sf) {
     if (!CW) return;
-    const sf = clamp((S.ly - hero.top) / S.vhHero, 0, 1);
     if (sf >= 1) { ctx.clearRect(0, 0, CW, CH); return; }
-    spin2 += dt * 0.00016 * (1 + sf * 2.2);
+    spin2 += dt * 0.00016 * (0.4 + sf * 2);
     const rotY = spin2 + (S.lmx / CW - 0.5) * 0.9;
-    const rotX = 0.48 + (S.lmy / CH - 0.5) * 0.5 + sf * 0.4;
-    const spread = 1 + sf * 0.9;
-    const size = Math.min(CW, CH) * 0.148 * (1 - sf * 0.22);
-    const cx = CW / 2, cy = CH / 2 + sf * CH * 0.08;
+    const rotX = 0.48 + (S.lmy / CH - 0.5) * 0.5 + (1 - ezo(sf)) * 0.6;
+    const spread = lerp(2.5, 1, ezo(sf / 0.8));           // converge, not explode
+    const size = Math.min(CW, CH) * 0.148 * lerp(0.55, 1, ezo(sf));
+    const cx = CW / 2, cy = CH / 2;
     const cY = Math.cos(rotY), sY = Math.sin(rotY), cX = Math.cos(rotX), sX = Math.sin(rotX);
     const FL = 4.6;
     ctx.clearRect(0, 0, CW, CH);
     ctx.globalCompositeOperation = 'lighter';
     ctx.fillStyle = 'rgba(244,244,241,.5)';
+    const dustA = ezo((sf - 0.3) / 0.5);
     for (const d of DUST) {
-      d.th += d.sp * dt * 0.001 * spread;
-      let x = d.r * spread * Math.sin(d.ph) * Math.cos(d.th), y = d.r * spread * Math.cos(d.ph), z = d.r * spread * Math.sin(d.ph) * Math.sin(d.th);
+      d.th += d.sp * dt * 0.001;
+      const dr = d.r * lerp(1.8, 1, ezo(sf / 0.8));
+      let x = dr * Math.sin(d.ph) * Math.cos(d.th), y = dr * Math.cos(d.ph), z = dr * Math.sin(d.ph) * Math.sin(d.th);
       let x1 = x * cY - z * sY, z1 = x * sY + z * cY;
       let y1 = y * cX - z1 * sX, z2 = y * sX + z1 * cX;
       const p = FL / (FL + z2);
-      ctx.globalAlpha = clamp((p - 0.72) / 0.55, 0.04, 0.5) * 0.55;
+      ctx.globalAlpha = clamp((p - 0.72) / 0.55, 0.04, 0.5) * 0.55 * dustA;
       ctx.fillRect(cx + x1 * size * p * 1.15, cy + y1 * size * p * 1.15, 1.4, 1.4);
     }
     LAYERS.forEach((L, li) => {
-      const ls = L.s * (1 + li * sf * 0.55);
+      const ls = L.s * spread;
       const pts = [];
       for (let i = 0; i <= L.pts; i++) {
         const [x, y, z] = knot((i / L.pts) * TAU, ls, L.ph);
@@ -355,7 +386,7 @@
         const avg = seg.reduce((a, p) => a + p[2], 0) / seg.length;
         ctx.beginPath();
         seg.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
-        ctx.globalAlpha = clamp((avg - 0.68) / 0.6, 0.03, 1) * (li === 2 ? 0.75 : 0.4) * (1 - sf * 0.35);
+        ctx.globalAlpha = clamp((avg - 0.68) / 0.6, 0.03, 1) * (li === 2 ? 0.75 : 0.4) * ezo(sf / 0.25);
         ctx.lineWidth = li === 2 ? 1.1 : 0.7;
         ctx.strokeStyle = '#f4f4f1';
         ctx.stroke();
@@ -368,27 +399,30 @@
   /* ============================================================
      MEASUREMENTS
      ============================================================ */
-  const hero = { top: 0, h: 0, vh: S.vh };
-  S.vhHero = innerHeight * 1.15;
-  const mani = { top: 0, range: 1 };
+  const hero = { top: 0, h: 0, range: 1 };
   const svc = { top: 0, range: 1, track: 0 };
   let pxItems = [], colItems = [], driftItems = [], mqW = 0;
-
   const svcTrack = $('#svcTrack');
   const mqTrack = $('#mqTrack');
 
   function measure() {
     S.vh = innerHeight;
-    const heroEl = $('.hero'), maniEl = $('#manifesto'), svcEl = $('#services');
-    hero.top = heroEl.offsetTop; hero.h = heroEl.offsetHeight; S.vhHero = S.vh * 1.15;
-    mani.top = maniEl.offsetTop; mani.range = maniEl.offsetHeight - S.vh;
+    const heroEl = $('.hero'), svcEl = $('#services');
+    hero.top = heroEl.offsetTop; hero.h = heroEl.offsetHeight; hero.range = hero.h - S.vh;
     svc.top = svcEl.offsetTop; svc.range = svcEl.offsetHeight - S.vh;
     svc.track = Math.max(0, svcTrack.scrollWidth - innerWidth + innerWidth * 0.06);
     mqW = mqTrack.children[0] ? mqTrack.children[0].offsetWidth : 0;
 
+    ramps.forEach(r => {
+      if (!r.pin) return;
+      const rect = r.pin.getBoundingClientRect();
+      r.top = rect.top + scrollY;
+      r.range = Math.max(rect.height - S.vh, 1);
+    });
     pxItems = $$('[data-speed]').map(el => {
       const r = el.getBoundingClientRect();
-      return { el, sp: parseFloat(el.dataset.speed), top: r.top + scrollY, h: r.height };
+      return { el, sp: parseFloat(el.dataset.speed), top: r.top + scrollY, h: r.height,
+               zoom: el.hasAttribute('data-zoom') };
     });
     colItems = $$('[data-colspeed]').map(el => ({
       el, sp: parseFloat(el.dataset.colspeed), top: el.getBoundingClientRect().top + scrollY
@@ -427,14 +461,34 @@
   });
 
   /* ============================================================
-     PROCESS INDEX + STATS
+     ACCORDION + PROCESS INDEX
      ============================================================ */
+  $$('.ap-row').forEach(row => {
+    row.querySelector('.ap-head').addEventListener('click', () => {
+      const was = row.classList.contains('open');
+      $$('.ap-row.open').forEach(r => r.classList.remove('open'));
+      if (!was) row.classList.add('open');
+    });
+  });
+
   const apCur = $('#apCur');
+  const stackEls = $$('.ap-stack span');
   const apIO = new IntersectionObserver(es => es.forEach(e => {
-    if (e.isIntersecting) apCur.textContent = e.target.dataset.ap;
+    if (!e.isIntersecting) return;
+    const n = e.target.dataset.ap;
+    apCur.textContent = n;
+    stackEls.forEach(s => s.classList.toggle('on', s.dataset.i === n));
   }), { rootMargin: '-40% 0px -50% 0px' });
   $$('.ap-row').forEach(r => apIO.observe(r));
 
+  // hero HUD + stage tags
+  const hudEl = $('#hudPct'), tgEls = $$('.tg');
+  const TG_T = [0.06, 0.3, 0.52, 0.74];
+  let hudLast = -1;
+
+  /* ============================================================
+     STATS
+     ============================================================ */
   const statIO = new IntersectionObserver(es => es.forEach(e => {
     if (!e.isIntersecting) return;
     statIO.unobserve(e.target);
@@ -448,6 +502,10 @@
   }), { threshold: 0.6 });
   $$('.stat-num').forEach(el => statIO.observe(el));
 
+  $('#toTop').addEventListener('click', () => {
+    if (sm.on) sm.t = 0; else scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
   /* ============================================================
      MASTER LOOP
      ============================================================ */
@@ -456,21 +514,19 @@
 
   const progressEl = $('#progress');
   const ht1 = $('.ht-1'), ht2 = $('.ht-2');
-  const navEl = $('#nav');
   const svcCur = $('#svcCur'), svcBar = $('#svcBar');
-  let svcLP = 0, rampLP = 0, rampLast = -1, mqPos = 0, prevLy = S.y, svcLastIdx = -1;
+  let svcLP = 0, mqPos = 0, prevLy = S.y, svcLastIdx = -1;
   let lastT = performance.now();
 
   function frame(now) {
     const dt = Math.min(now - lastT, 50); lastT = now;
 
-    // --- smooth scroll integration
+    // --- smooth scroll
     if (sm.on) {
       sm.c = lerp(sm.c, sm.t, 0.088);
       if (Math.abs(sm.t - sm.c) < 0.05) sm.c = sm.t;
       if (Math.abs(scrollY - sm.c) > 0.5) window.scrollTo(0, sm.c);
-      S.y = sm.c;
-      S.ly = sm.c;
+      S.y = sm.c; S.ly = sm.c;
     } else {
       S.ly = lerp(S.ly, S.y, 0.1);
     }
@@ -485,7 +541,7 @@
       ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
     }
 
-    // --- progress + nav hide
+    // --- progress bar + nav
     const max = maxScroll();
     progressEl.style.transform = `scaleX(${max > 0 ? S.ly / max : 0})`;
     if (S.ly > 160 && S.sv > 0.6) document.body.classList.add('nav-hide');
@@ -498,15 +554,23 @@
       mqTrack.style.transform = `translate3d(${-mqPos}px,0,0)`;
     }
 
-    // --- hero sculpture + title drift
-    const inHero = S.ly < hero.top + hero.h + 200;
-    if (inHero) {
-      const sf = clamp((S.ly - hero.top) / S.vhHero, 0, 1);
-      if (gl) gl.draw(dt, sf); else draw2D(dt);
-      ht1.style.transform = `translate3d(${-sf * 7}vw,0,0)`;
-      ht2.style.transform = `translate3d(${sf * 7}vw,0,0)`;
-      const o = 1 - sf * 0.55;
-      ht1.style.opacity = o; ht2.style.opacity = o;
+    // --- HERO assembly
+    const heroP = clamp((S.ly - hero.top) / hero.range, 0, 1);
+    if (S.ly < hero.top + hero.h + 200) {
+      if (gl) gl.draw(dt, heroP); else draw2D(dt, heroP);
+
+      // HUD + tags
+      const pct = Math.round(heroP * 100);
+      if (pct !== hudLast) {
+        hudLast = pct;
+        hudEl.textContent = String(pct).padStart(3, '0');
+        tgEls.forEach((t, i) => t.classList.toggle('on', heroP >= TG_T[i]));
+      }
+      // title drift + tail fade
+      ht1.style.transform = `translate3d(${-heroP * 6}vw,0,0)`;
+      ht2.style.transform = `translate3d(${heroP * 6}vw,0,0)`;
+      const to = 1 - clamp((heroP - 0.86) / 0.14, 0, 1) * 0.85;
+      ht1.style.opacity = to; ht2.style.opacity = to;
     }
 
     // --- services horizontal pin
@@ -519,23 +583,31 @@
       if (idx !== svcLastIdx) { svcLastIdx = idx; svcCur.textContent = String(idx).padStart(2, '0'); }
     }
 
-    // --- manifesto word ramp
-    const rp = clamp((S.ly - mani.top + S.vh * 0.12) / mani.range, 0, 1);
-    rampLP = lerp(rampLP, rp, RM ? 1 : 0.09);
-    if (Math.abs(rampLP - rampLast) > 0.0004) {
-      rampLast = rampLP;
-      const n = rampWords.length;
+    // --- word ramps (manifesto + philosophy)
+    for (const r of ramps) {
+      const p = clamp((S.ly - r.top + S.vh * 0.1) / r.range, 0, 1);
+      r.lp = lerp(r.lp, p, RM ? 1 : 0.1);
+      if (Math.abs(r.lp - r.last) < 0.0004) continue;
+      r.last = r.lp;
+      const n = r.words.length;
       for (let i = 0; i < n; i++) {
-        rampWords[i].style.opacity = clamp((rampLP - (i / n) * 0.86) * 6.5, 0.12, 1);
+        r.words[i].style.opacity = clamp((r.lp - (i / n) * 0.86) * 6.5, 0.12, 1);
       }
+      if (r.meter) r.meter.style.transform = `scaleY(${r.lp})`;
     }
 
-    // --- parallax + velocity skew
+    // --- parallax / zoom / velocity skew
     const vc = S.ly + S.vh / 2;
     const skew = clamp(-S.sv * 0.09, -5, 5);
     for (const it of pxItems) {
-      const y = clamp((vc - (it.top + it.h / 2)) * it.sp, -90, 90);
-      it.el.style.transform = `translate3d(0,${y.toFixed(1)}px,0) scale(1.18) skewY(${skew.toFixed(2)}deg)`;
+      if (it.zoom) {
+        const pz = clamp((S.ly + S.vh - it.top) / (S.vh + it.h), 0, 1);
+        const ty = clamp((vc - (it.top + it.h / 2)) * it.sp, -60, 60);
+        it.el.style.transform = `translate3d(0,${ty.toFixed(1)}px,0) scale(${(1.32 - pz * 0.22).toFixed(3)})`;
+      } else {
+        const y = clamp((vc - (it.top + it.h / 2)) * it.sp, -90, 90);
+        it.el.style.transform = `translate3d(0,${y.toFixed(1)}px,0) scale(1.18) skewY(${skew.toFixed(2)}deg)`;
+      }
     }
     for (const it of colItems) {
       const y = clamp((vc - it.top) * it.sp * 2, -140, 140);
