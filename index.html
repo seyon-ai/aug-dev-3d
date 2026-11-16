@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AUG DEV STUDIO® — Imagine It. We Create It.</title>
+<meta name="description" content="AUG DEV STUDIO is a digital 3D creation studio. Custom 3D modelling, product visualization, fantasy sculptural assets and game-ready props.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23060606'/%3E%3Ctext x='16' y='22' font-family='Arial' font-weight='900' font-size='16' fill='white' text-anchor='middle'%3EA%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Space+Grotesk:wght@300;400;500&family=Space+Mono&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<!-- ============ PRELOADER ============ -->
+<div class="loader" id="loader">
+  <div class="loader-top">
+    <span class="mono">AUG DEV STUDIO®</span>
+    <span class="mono">PORTFOLIO — 2026</span>
+  </div>
+  <div class="loader-center">
+    <div class="loader-tag"><span>Imagine&nbsp;It.</span></div>
+    <div class="loader-tag"><span>We&nbsp;Create&nbsp;It.</span></div>
+  </div>
+  <div class="loader-bottom">
+    <span class="mono loader-label">LOADING ASSETS</span>
+    <span class="loader-count" id="loaderCount">0</span>
+  </div>
+  <div class="loader-bar"><span id="loaderBar"></span></div>
+</div>
+<div class="curtain" aria-hidden="true"></div>
+
+<!-- scroll progress -->
+<div class="progress" id="progress"></div>
+
+<!-- custom cursor -->
+<div class="cursor" id="cursor">
+  <div class="cursor-ring" id="cursorRing"><span id="cursorLabel">VIEW</span></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+</div>
+
+<!-- ============ NAV ============ -->
+<header class="nav" id="nav">
+  <a href="#top" class="brand" data-hover data-nav>AUG DEV<span class="sup">®</span></a>
+  <nav class="nav-links">
+    <a href="#services" data-hover data-nav>Services</a>
+    <a href="#work" data-hover data-nav>Work</a>
+    <a href="#process" data-hover data-nav>Process</a>
+    <a href="#studio" data-hover data-nav>Studio</a>
+  </nav>
+  <a href="#contact" class="nav-cta magnet" data-hover data-nav><span>Let’s Talk</span></a>
+</header>
+
+<main id="smooth">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero" id="top">
+    <div class="hero-stage" id="heroStage">
+      <canvas id="sculpt"></canvas>
+      <div class="hero-vignette" aria-hidden="true"></div>
+      <div class="hero-frame">
+        <span class="mono hm hm-tl">DIGITAL 3D CREATION STUDIO</span>
+        <span class="mono hm hm-tr">PORTFOLIO — VOL. 01</span>
+        <span class="mono hm hm-br">EST. 2025 — WORKING WORLDWIDE</span>
+        <div class="hm-bl">
+          <span class="mono">SCROLL TO DISCOVER</span>
+          <span class="scroll-line"><i></i></span>
+        </div>
+      </div>
+      <h1 class="hero-title" id="heroTitle" aria-label="Imagine It. We Create It.">
+        <div class="ht-line ht-1" data-split>Imagine It.</div>
+        <div class="ht-line ht-2" data-split>We Create It.</div>
+      </h1>
+    </div>
+  </section>
+
+  <!-- ============ MARQUEE ============ -->
+  <section class="marquee" aria-hidden="true">
+    <div class="mq-track" id="mqTrack">
+      <div class="mq-inner">
+        <span>Custom 3D Modelling</span><i>◆</i><span>Product Modelling</span><i>◆</i><span>Fantasy &amp; Sculptural</span><i>◆</i><span>Game Assets</span><i>◆</i><span>3D Visualization</span><i>◆</i><span>Asset Conversion</span><i>◆</i>
+      </div>
+      <div class="mq-inner">
+        <span>Custom 3D Modelling</span><i>◆</i><span>Product Modelling</span><i>◆</i><span>Fantasy &amp; Sculptural</span><i>◆</i><span>Game Assets</span><i>◆</i><span>3D Visualization</span><i>◆</i><span>Asset Conversion</span><i>◆</i>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ MANIFESTO (pinned word ramp) ============ -->
+  <section class="manifesto" id="manifesto">
+    <div class="mani-stage">
+      <div class="sec-label mono"><span>MANIFESTO</span><span>01 / 07</span></div>
+      <p class="ramp" id="ramp">AUG DEV STUDIO is a digital 3D creation studio. We transform raw ideas into precise, production-ready three-dimensional assets — combining AI-assisted pipelines with obsessive artistic refinement. From fantasy sculptures to game-ready assets, custom 3D creation made accessible, efficient and exact.</p>
+    </div>
+  </section>
+
+  <!-- ============ SERVICES — pinned horizontal (white) ============ -->
+  <section class="services white" id="services">
+    <div class="svc-stage">
+      <div class="sec-label mono"><span>WHAT WE DO</span><span>02 / 07</span></div>
+      <div class="svc-track" id="svcTrack">
+        <div class="svc-intro">
+          <h2 class="svc-h"><span>We</span><span class="out">Do</span></h2>
+          <p>Six disciplines, one pipeline — concept in, production-ready asset out. Every project structured, priced and delivered without surprises.</p>
+        </div>
+        <article class="svc-card" data-hover>
+          <figure><img src="assets/p3-statue.jpg" alt="Custom 3D modelling"></figure>
+          <div class="sc-meta"><span class="mono sc-idx">/ 01</span><h3>Custom 3D Modelling</h3><span class="mono sc-tag">CONCEPT → MODEL</span></div>
+        </article>
+        <article class="svc-card" data-hover>
+          <figure><img src="assets/p2-headphones.jpg" alt="Product modelling"></figure>
+          <div class="sc-meta"><span class="mono sc-idx">/ 02</span><h3>Product Modelling</h3><span class="mono sc-tag">ELECTRONICS / PROTOTYPES</span></div>
+        </article>
+        <article class="svc-card" data-hover>
+          <figure><img src="assets/p1-skull.jpg" alt="Fantasy and sculptural assets"></figure>
+          <div class="sc-meta"><span class="mono sc-idx">/ 03</span><h3>Fantasy &amp; Sculptural</h3><span class="mono sc-tag">STATUES / SKULLS / DECOR</span></div>
+        </article>
+        <article class="svc-card" data-hover>
+          <figure><img src="assets/p4-environment.jpg" alt="Game assets"></figure>
+          <div class="sc-meta"><span class="mono sc-idx">/ 04</span><h3>Game Assets</h3><span class="mono sc-tag">PROPS / ENVIRONMENTS</span></div>
+        </article>
+        <article class="svc-card" data-hover>
+          <figure><img src="assets/p5-arch.jpg" alt="3D visualization"></figure>
+          <div class="sc-meta"><span class="mono sc-idx">/ 05</span><h3>3D Visualization</h3><span class="mono sc-tag">RENDERS / PRESENTATION</span></div>
+        </article>
+        <article class="svc-card" data-hover>
+          <figure><img src="assets/p6-android.jpg" alt="Asset conversion"></figure>
+          <div class="sc-meta"><span class="mono sc-idx">/ 06</span><h3>Asset Conversion</h3><span class="mono sc-tag">ANY FORMAT / WORKFLOW</span></div>
+        </article>
+        <div class="svc-outro">
+          <span class="mono">OBJ / FBX / GLTF / STL / USDZ / BLEND</span>
+          <p>Delivered in the format your workflow needs — engine-ready, print-ready, pipeline-clean.</p>
+        </div>
+      </div>
+      <div class="svc-progress">
+        <span class="mono"><b id="svcCur">01</b> / 06</span>
+        <div class="svc-bar"><i id="svcBar"></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ SELECTED WORK ============ -->
+  <section class="work" id="work">
+    <div class="sec-label mono"><span>SELECTED WORK</span><span>03 / 07</span></div>
+    <div class="work-head">
+      <h2 data-split>Featured Projects</h2>
+      <span class="mono work-count">( 06 )</span>
+    </div>
+
+    <div class="wgrid">
+      <div class="wcol" data-colspeed="0">
+        <a href="#" class="wcard" data-cursor="view" data-hover>
+          <figure class="rvl"><img src="assets/p1-skull.jpg" alt="Baroque skull sculptural asset" data-speed="0.08"></figure>
+          <div class="wmeta"><span class="mono widx">/ 001</span><h3>Baroque Skull</h3><p>Sculptural Asset — ZBrush / Blender</p></div>
+        </a>
+        <a href="#" class="wcard" data-cursor="view" data-hover>
+          <figure class="rvl"><img src="assets/p3-statue.jpg" alt="Fallen Seraph fantasy statue" data-speed="0.08"></figure>
+          <div class="wmeta"><span class="mono widx">/ 003</span><h3>Fallen Seraph</h3><p>Fantasy Statue — Digital Sculpture</p></div>
+        </a>
+        <a href="#" class="wcard" data-cursor="view" data-hover>
+          <figure class="rvl"><img src="assets/p5-arch.jpg" alt="Monolith Pavilion architectural structure" data-speed="0.08"></figure>
+          <div class="wmeta"><span class="mono widx">/ 005</span><h3>Monolith Pavilion</h3><p>Architectural Structure — Parametric</p></div>
+        </a>
+      </div>
+      <div class="wcol wcol-off" data-colspeed="-0.05">
+        <a href="#" class="wcard" data-cursor="view" data-hover>
+          <figure class="rvl"><img src="assets/p2-headphones.jpg" alt="Nova headphones product visualization" data-speed="0.08"></figure>
+          <div class="wmeta"><span class="mono widx">/ 002</span><h3>Nova Headphones</h3><p>Product Visualization — Hard Surface</p></div>
+        </a>
+        <a href="#" class="wcard" data-cursor="view" data-hover>
+          <figure class="rvl"><img src="assets/p4-environment.jpg" alt="Sector 7 game environment" data-speed="0.08"></figure>
+          <div class="wmeta"><span class="mono widx">/ 004</span><h3>Sector 7</h3><p>Game Environment — Engine Ready</p></div>
+        </a>
+        <a href="#" class="wcard" data-cursor="view" data-hover>
+          <figure class="rvl"><img src="assets/p6-android.jpg" alt="Unit 09 android bust" data-speed="0.08"></figure>
+          <div class="wmeta"><span class="mono widx">/ 006</span><h3>Unit 09</h3><p>Character Bust — Hard Surface / Organic</p></div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ VALUES ============ -->
+  <section class="values" id="values">
+    <div class="sec-label mono"><span>THE STANDARD</span><span>04 / 07</span></div>
+    <span class="ghost" data-drift="0.1" aria-hidden="true">CRAFT</span>
+
+    <article class="value">
+      <span class="v-idx mono">( 01 )</span>
+      <h3 class="v-word" data-split>Precise</h3>
+      <p class="v-p" data-words>Every vertex placed with intent — clean topology, exact proportions and surfaces that hold up under the closest inspection, from render to real-time engine.</p>
+    </article>
+
+    <article class="value">
+      <span class="v-idx mono">( 02 )</span>
+      <h3 class="v-word" data-split>Refined</h3>
+      <p class="v-p" data-words>AI-assisted workflows guided by an artist’s hand — technology accelerates the pipeline, but craft makes every final decision.</p>
+    </article>
+
+    <article class="value">
+      <span class="v-idx mono">( 03 )</span>
+      <h3 class="v-word" data-split>Accessible</h3>
+      <p class="v-p" data-words>High-quality custom 3D made efficient and affordable — for individuals, businesses, game developers and creative professionals.</p>
+    </article>
+  </section>
+
+  <!-- ============ PROCESS ============ -->
+  <section class="process" id="process">
+    <div class="sec-label mono"><span>THE PROCESS</span><span>05 / 07</span></div>
+    <div class="ap-wrap">
+      <div class="ap-sticky">
+        <span class="ap-cur" id="apCur">01</span>
+        <span class="ap-total mono">/ 05</span>
+        <p class="ap-hint">Every project moves through a structured sequence — no ambiguity, no surprises.</p>
+      </div>
+      <div class="ap-rows">
+        <article class="ap-row" data-ap="01">
+          <h3 data-split>Brief &amp; References</h3>
+          <p>We lock the direction before a single polygon is placed — concept, references, style, constraints and target platform all defined up front.</p>
+          <ul class="mono"><li>Concept alignment</li><li>Reference board</li><li>Technical targets</li></ul>
+        </article>
+        <article class="ap-row" data-ap="02">
+          <h3 data-split>Blockout &amp; Form</h3>
+          <p>Silhouette and proportion are resolved early. The form must read correctly from every angle before detail work begins.</p>
+          <ul class="mono"><li>Silhouette pass</li><li>Proportion lock</li><li>Scale validation</li></ul>
+        </article>
+        <article class="ap-row" data-ap="03">
+          <h3 data-split>Sculpt &amp; Detail</h3>
+          <p>High-frequency detail, surface breakup and material intent — the stage where an asset earns its character.</p>
+          <ul class="mono"><li>High-poly sculpt</li><li>Surface detail</li><li>Material direction</li></ul>
+        </article>
+        <article class="ap-row" data-ap="04">
+          <h3 data-split>Retopo &amp; Optimize</h3>
+          <p>Clean topology, unwrapped UVs and budgets respected — assets arrive engine-ready, printable, or pipeline-clean.</p>
+          <ul class="mono"><li>Clean topology</li><li>UV / baking</li><li>Poly budget</li></ul>
+        </article>
+        <article class="ap-row" data-ap="05">
+          <h3 data-split>Render &amp; Deliver</h3>
+          <p>Cinematic presentation renders plus exports in the formats your workflow needs — OBJ, FBX, GLTF, STL, USDZ, BLEND.</p>
+          <ul class="mono"><li>Studio renders</li><li>Turntable</li><li>All formats</li></ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ STUDIO (white) ============ -->
+  <section class="studio white" id="studio">
+    <div class="sec-label mono"><span>THE STUDIO</span><span>06 / 07</span></div>
+    <div class="studio-grid">
+      <div class="studio-copy">
+        <h2 data-split>Our Mission</h2>
+        <p class="studio-p" data-words>To make high-quality 3D creation accessible to everyone — combining creativity, technology and efficient production workflows into assets that ship on time and hold up in production.</p>
+        <div class="stats">
+          <div class="stat"><span class="stat-num" data-count="120" data-suffix="+">0</span><span class="mono stat-l">ASSETS DELIVERED</span></div>
+          <div class="stat"><span class="stat-num" data-count="6" data-suffix="">0</span><span class="mono stat-l">EXPORT FORMATS</span></div>
+          <div class="stat"><span class="stat-num" data-count="48" data-suffix="h">0</span><span class="mono stat-l">AVG. TURNAROUND</span></div>
+        </div>
+      </div>
+      <figure class="studio-img rvl">
+        <img src="assets/about.jpg" alt="AUG DEV STUDIO workstation at night" data-speed="0.06">
+        <figcaption class="mono">THE WORKBENCH — WHERE POLYGONS BECOME PRODUCTS</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="contact" id="contact">
+    <div class="sec-label mono"><span>GET IN TOUCH</span><span>07 / 07</span></div>
+    <p class="contact-lead" data-words>Have a concept, a sketch, or just an idea? Send references — we’ll turn it into a finished 3D asset.</p>
+    <a href="mailto:hello@augdev.studio" class="biglink magnet" data-hover id="biglink" aria-label="Let’s talk — email AUG DEV STUDIO">
+      <span class="bl-line"><span class="bl-txt" data-roll>Let’s Talk ↗</span></span>
+    </a>
+    <div class="contact-row">
+      <div><span class="mono c-lab">ENQUIRIES</span><a href="mailto:hello@augdev.studio" data-hover>hello@augdev.studio</a></div>
+      <div><span class="mono c-lab">SOCIAL</span><a href="#" data-hover>Instagram</a> <span class="mono">/</span> <a href="#" data-hover>ArtStation</a> <span class="mono">/</span> <a href="#" data-hover>X</a></div>
+      <div><span class="mono c-lab">RESPONSE</span><span>Within 24 hours</span></div>
+    </div>
+  </section>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="foot-brand" data-drift="0.06" aria-hidden="true">AUG DEV<span>®</span></div>
+    <div class="foot-bottom">
+      <span class="mono">© 2026 AUG DEV STUDIO — ALL RIGHTS RESERVED</span>
+      <span class="mono foot-tag">IMAGINE IT. WE CREATE IT.</span>
+      <button class="mono to-top" id="toTop" data-hover>BACK TO TOP ↑</button>
+    </div>
+  </footer>
+
+</main>
+
+<!-- film grain -->
+<div class="grain" aria-hidden="true"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.149.0/build/three.min.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>
